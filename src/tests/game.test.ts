@@ -3,7 +3,6 @@ import { baseBetDefaults } from '../bets'
 import { resolvePointValue, resolveBets, resolveMakeBet } from '../game'
 
 describe('resolveMakeBet', () => {
-  // Define any common setup or variables here
   const initialBet = {
     ...baseBetDefaults,
     amount: 10,

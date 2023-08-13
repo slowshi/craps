@@ -1,7 +1,6 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
 import { resolveBets } from '../../game'
-import { IBetMap } from '../../bets'
+import { baseBetDefaults, IBetMap } from '../../bets'
 import { getRolls } from '../..'
 
 const rolls = getRolls([4, 5, 6, 7, 8, 9, 10])
@@ -20,12 +19,12 @@ for (let i = 0; i < rolls.length; i++) {
 
       expect(result).toEqual({
         betMap: {},
-        payouts: [
-          {
+        payouts: {
+          [`centerHop${roll[0]}${roll[1]}`]: {
             ...initialBet,
-            amount: 310,
-          },
-        ],
+            amount: 310
+          }
+        },
       })
     })
     test('Loss', () => {
@@ -36,12 +35,12 @@ for (let i = 0; i < rolls.length; i++) {
 
       expect(result).toEqual({
         betMap: {},
-        payouts: [
-          {
+        payouts: {
+          [`centerHop${roll[0]}${roll[1]}`]: {
             ...initialBet,
-            amount: 0,
-          },
-        ],
+            amount: 0
+          }
+        },
       })
     })
   })

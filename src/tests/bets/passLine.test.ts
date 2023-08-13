@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
+import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 
 describe('resolveBets: Pass Line', () => {
@@ -15,12 +15,12 @@ describe('resolveBets: Pass Line', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        linePassLine: {
           ...initialBet,
           amount: 20,
         },
-      ],
+      },
     })
   })
   test('Loss - Come out any craps', () => {
@@ -31,12 +31,12 @@ describe('resolveBets: Pass Line', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        linePassLine: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
   test('Come out set Point', () => {
@@ -49,7 +49,7 @@ describe('resolveBets: Pass Line', () => {
       betMap: {
         linePassLine6: initialBet,
       },
-      payouts: [],
+      payouts: {},
     })
   })
   test('Loss - Point 7 Out', () => {
@@ -60,12 +60,12 @@ describe('resolveBets: Pass Line', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        linePassLine6: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
   test('Winner point', () => {
@@ -76,12 +76,12 @@ describe('resolveBets: Pass Line', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        linePassLine6: {
           ...initialBet,
           amount: 20,
         },
-      ],
+      },
     })
   })
   test('Winner point with odds', () => {
@@ -92,13 +92,13 @@ describe('resolveBets: Pass Line', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        linePassLine6: {
           ...initialBet,
           amount: 20,
           odds: 44,
         },
-      ],
+      },
     })
   })
   test('Point 7 out with odds', () => {
@@ -109,12 +109,12 @@ describe('resolveBets: Pass Line', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        linePassLine8: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
 })

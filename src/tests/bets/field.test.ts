@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
+import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 
 describe('resolveBets: Field', () => {
@@ -15,14 +15,15 @@ describe('resolveBets: Field', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        centerField:{
           ...initialBet,
           amount: 0,
-        },
-      ],
+        }
+      },
     })
   })
+
   test('Win', () => {
     const betMap: Partial<IBetMap> = {
       centerField: { ...initialBet, amount: 10 },
@@ -31,12 +32,12 @@ describe('resolveBets: Field', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        centerField:{
           ...initialBet,
           amount: 20,
-        },
-      ],
+        }
+      },
     })
   })
   test('Win double on 2 || 12', () => {
@@ -47,12 +48,12 @@ describe('resolveBets: Field', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        centerField:{
           ...initialBet,
           amount: 30,
-        },
-      ],
+        }
+      },
     })
   })
 })

@@ -1,11 +1,20 @@
-import { getRollValue, isValidPoint,DiceRoll } from './dice'
-import { moveLineBet, updateBetMap, isEmptyBet, IBaseBet, IBetMap, getBetPayByRoll, baseBetDefaults } from './bets'
+import { getRollValue, isValidPoint, DiceRoll } from './dice'
+import {
+  moveLineBet,
+  updateBetMap,
+  isEmptyBet,
+  IBaseBet,
+  IBetMap,
+  getBetPayByRoll,
+  baseBetDefaults,
+  LineKey,
+  lineRolls,
+} from './bets'
 import { betResolvesMap, lineBetOdds, dontLineBetOdds } from './betTypes'
-export type LineKey = 'linePassLine' | 'lineDontPassLine' | 'lineComeLine' | 'lineDontComeLine'
-export const lineRolls = ['linePassLine', 'lineDontPassLine', 'lineComeLine', 'lineDontComeLine']
 export type GameState = {
   pointValue: number
-  dice: DiceRoll
+  dice: DiceRole
+  sevenOut: boolean
 }
 export const resolveMakeBet = (
   betMap: Partial<IBetMap>,
@@ -47,11 +56,11 @@ export const resolveMakeBet = (
 }
 export interface BetResolution {
   betMap: Partial<IBetMap>
-  payouts: IBaseBet[]
+  payouts: Partial<IBetMap>
 }
 export const resolveBets = (betMap: Partial<IBetMap>, roll: DiceRoll, pointValue: number): BetResolution => {
   const rollValue = getRollValue(roll)
-  const payouts: IBaseBet[] = []
+  let payouts: Partial<IBetMap> = {}
   let newBetMap = { ...betMap }
   const betTypes: (keyof IBetMap)[] = Object.keys(newBetMap) as (keyof IBetMap)[]
   const comeLines = []
@@ -79,11 +88,14 @@ export const resolveBets = (betMap: Partial<IBetMap>, roll: DiceRoll, pointValue
         if (type.includes('linePassLine') && payout > 0 && pointValue > 0) {
           odds = Math.floor(bet.odds + bet.odds * lineBetOdds[pointValue])
         }
-        payouts.push({
-          ...bet,
-          amount: bet.amount + bet.amount * payout,
-          odds,
-        })
+        payouts = {
+          ...payouts,
+          [type]: {
+            ...bet,
+            amount: bet.amount + bet.amount * payout,
+            odds,
+          },
+        }
         delete newBetMap[type]
       } else {
         if (lineRolls.indexOf(type) > -1) {
@@ -113,15 +125,18 @@ export const resolveBets = (betMap: Partial<IBetMap>, roll: DiceRoll, pointValue
 export const resolvePointValue = (roll: DiceRoll, pointValue: number): GameState => {
   const rollValue = getRollValue(roll)
   let newPointValue = pointValue
+  let sevenOut = false
   if (pointValue === 0 && isValidPoint(roll)) {
     newPointValue = rollValue
   } else if (pointValue !== 0 && getRollValue(roll) === 7) {
     newPointValue = 0
+    sevenOut = true
   } else if (pointValue !== 0 && getRollValue(roll) === pointValue) {
     newPointValue = 0
   }
   return {
     pointValue: newPointValue,
     dice: roll,
+    sevenOut,
   }
 }

@@ -1,194 +1,55 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
+import { baseBetDefaults, IBetMapm } from '../../bets'
 import { resolveBets } from '../../game'
-import { IBetMap } from '../../bets'
-describe('resolveBets: Horn 12', () => {
-  const initialBet = {
-    ...baseBetDefaults,
-    amount: 10,
-  }
-  test('Win', () => {
-    const betMap: Partial<IBetMap> = {
-      center12: initialBet,
+import { getRolls } from '../../dice'
+const horn:number[] = [2,3,11,12,7]
+const expectedPayouts = {
+  7: 80,
+  11: 160,
+  12: 310,
+  2: 310,
+  3: 160
+}
+for (let i =0; i < horn.length; i++) {
+  const value = horn[i]
+  const diceRolls = getRolls([value])
+  describe(`resolveBets: Horn ${value}`, () => {
+    const initialBet = {
+      ...baseBetDefaults,
+      amount: 10,
     }
-    const result = resolveBets(betMap, [6, 6], 0)
+    test('Win', () => {
+      const betMap: Partial<IBetMap> = {
+        [`center${value}`]: initialBet,
+      }
+      const result = resolveBets(betMap, diceRolls[0], 0)
 
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 310,
+      expect(result).toEqual({
+        betMap: {},
+        payouts: {
+          [`center${value}`]: {
+            ...initialBet,
+            amount: expectedPayouts[value],
+          },
         },
-      ],
+      })
+    })
+    test('Loss', () => {
+      const betMap: Partial<IBetMap> = {
+        [`center${value}`]: initialBet,
+      }
+      const result = resolveBets(betMap, [1, 5], 0)
+
+      expect(result).toEqual({
+        betMap: {},
+        payouts: {
+          [`center${value}`]: {
+            ...initialBet,
+            amount: 0,
+          },
+        },
+      })
     })
   })
-  test('Loss', () => {
-    const betMap: Partial<IBetMap> = {
-      center12: initialBet,
-    }
-    const result = resolveBets(betMap, [1, 5], 0)
 
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 0,
-        },
-      ],
-    })
-  })
-})
-describe('resolveBets: Horn 11', () => {
-  const initialBet = {
-    ...baseBetDefaults,
-    amount: 10,
-  }
-  test('Win', () => {
-    const betMap: Partial<IBetMap> = {
-      center11: initialBet,
-    }
-    const result = resolveBets(betMap, [5, 6], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 160,
-        },
-      ],
-    })
-  })
-  test('Loss', () => {
-    const betMap: Partial<IBetMap> = {
-      center12: initialBet,
-    }
-    const result = resolveBets(betMap, [1, 5], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 0,
-        },
-      ],
-    })
-  })
-})
-describe('resolveBets: Horn 3', () => {
-  const initialBet = {
-    ...baseBetDefaults,
-    amount: 10,
-  }
-  test('Win', () => {
-    const betMap: Partial<IBetMap> = {
-      center3: initialBet,
-    }
-    const result = resolveBets(betMap, [2, 1], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 160,
-        },
-      ],
-    })
-  })
-  test('Loss', () => {
-    const betMap: Partial<IBetMap> = {
-      center3: initialBet,
-    }
-    const result = resolveBets(betMap, [1, 5], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 0,
-        },
-      ],
-    })
-  })
-})
-describe('resolveBets: Horn 3', () => {
-  const initialBet = {
-    ...baseBetDefaults,
-    amount: 10,
-  }
-  test('Win', () => {
-    const betMap: Partial<IBetMap> = {
-      center2: initialBet,
-    }
-    const result = resolveBets(betMap, [1, 1], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 310,
-        },
-      ],
-    })
-  })
-  test('Loss', () => {
-    const betMap: Partial<IBetMap> = {
-      center2: initialBet,
-    }
-    const result = resolveBets(betMap, [1, 5], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 0,
-        },
-      ],
-    })
-  })
-})
-describe('resolveBets: Big Red (7)', () => {
-  const initialBet = {
-    ...baseBetDefaults,
-    amount: 10,
-  }
-  test('Win', () => {
-    const betMap: Partial<IBetMap> = {
-      center7: initialBet,
-    }
-    const result = resolveBets(betMap, [3, 4], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 80,
-        },
-      ],
-    })
-  })
-  test('Loss', () => {
-    const betMap: Partial<IBetMap> = {
-      center7: initialBet,
-    }
-    const result = resolveBets(betMap, [1, 5], 0)
-
-    expect(result).toEqual({
-      betMap: {},
-      payouts: [
-        {
-          ...initialBet,
-          amount: 0,
-        },
-      ],
-    })
-  })
-})
+}

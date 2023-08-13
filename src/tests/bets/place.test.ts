@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
+import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 describe('resolveBets: Place', () => {
   const initialBet = {
@@ -14,12 +14,12 @@ describe('resolveBets: Place', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        numbersPlace6: {
           ...initialBet,
           amount: 26,
         },
-      ],
+      },
     })
   })
   test('Loss', () => {
@@ -30,12 +30,12 @@ describe('resolveBets: Place', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        numbersPlace6: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
   test('No Action', () => {
@@ -46,7 +46,7 @@ describe('resolveBets: Place', () => {
 
     expect(result).toEqual({
       betMap,
-      payouts: [],
+      payouts: {},
     })
   })
 
@@ -61,7 +61,7 @@ describe('resolveBets: Place', () => {
 
     expect(result).toEqual({
       betMap,
-      payouts: [],
+      payouts: {},
     })
   })
 
@@ -73,7 +73,7 @@ describe('resolveBets: Place', () => {
 
     expect(result).toEqual({
       betMap,
-      payouts: [],
+      payouts: {},
     })
   })
 
@@ -88,13 +88,13 @@ describe('resolveBets: Place', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        numbersPlace6: {
           ...initialBet,
           amount: 0,
           working: true,
         },
-      ],
+      },
     })
   })
 })

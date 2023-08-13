@@ -1,7 +1,16 @@
 {
   "name": "craps",
-  "module": "src/index.ts",
+  "version": "1.0.6",
   "type": "module",
+  "main": "lib/index.js",
+  "prepublish": "tsc",
+  "scripts": {
+    "build": "tsc",
+    "ts": "tsc --noEmit --incremental --preserveWatchOutput --pretty"
+  },
+  "files": [
+    "lib/**/*"
+  ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
@@ -11,7 +20,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "prettier": "^3.0.1"
   },
-  "peerDependencies": {
+  "dependencies": {
     "typescript": "^5.0.0"
   }
 }

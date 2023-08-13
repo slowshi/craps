@@ -1,6 +1,9 @@
-import { sortRollValues } from './dice'
+import { DiceRoll, sortRollValues } from './dice'
+export type LineKey = 'linePassLine' | 'lineDontPassLine' | 'lineComeLine' | 'lineDontComeLine'
+export const lineRolls = ['linePassLine', 'lineDontPassLine', 'lineComeLine', 'lineDontComeLine']
 
 export interface IBaseBet {
+  key: keyof IBetMap
   amount: number
   odds: number
   working: boolean
@@ -89,7 +92,6 @@ export const baseBetDefaults: IBaseBet = {
   amount: 0,
   odds: 0,
   working: false,
-  vig: 0,
   off: false,
 }
 

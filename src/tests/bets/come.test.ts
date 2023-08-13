@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
+import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 
 describe('resolveBets: Come Line', () => {
@@ -16,12 +16,12 @@ describe('resolveBets: Come Line', () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineComeLine: {
           ...initialBet,
           amount: 20,
         },
-      ],
+      },
     })
   })
   test('Lose - Any Craps', () => {
@@ -32,12 +32,12 @@ describe('resolveBets: Come Line', () => {
     const result = resolveBets(betMap, [2, 1], 6)
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineComeLine: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
   test('Set Come point ', () => {
@@ -50,7 +50,7 @@ describe('resolveBets: Come Line', () => {
       betMap: {
         lineComeLine8: initialBet,
       },
-      payouts: [],
+      payouts: {},
     })
   })
   test('Winner - Come point ', () => {
@@ -61,12 +61,12 @@ describe('resolveBets: Come Line', () => {
     const result = resolveBets(betMap, [4, 4], 6)
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineComeLine8: {
           ...initialBet,
           amount: 20,
         },
-      ],
+      },
     })
   })
   test('Winner with odds - Come point ', () => {
@@ -77,13 +77,13 @@ describe('resolveBets: Come Line', () => {
     const result = resolveBets(betMap, [4, 4], 6)
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineComeLine8: {
           ...initialBet,
           amount: 20,
           odds: 44,
         },
-      ],
+      },
     })
   })
   test('Winner - Come point. Reset Come', () => {
@@ -97,12 +97,12 @@ describe('resolveBets: Come Line', () => {
       betMap: {
         lineComeLine8: initialBet,
       },
-      payouts: [
-        {
+      payouts: {
+        lineComeLine8: {
           ...initialBet,
           amount: 20,
         },
-      ],
+      },
     })
   })
   test('Loss - Come Out 7', () => {
@@ -113,12 +113,12 @@ describe('resolveBets: Come Line', () => {
     const result = resolveBets(betMap, [3, 4], 0)
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineComeLine8: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
   test('Loss not working odds - Come Out 7', () => {
@@ -129,13 +129,13 @@ describe('resolveBets: Come Line', () => {
     const result = resolveBets(betMap, [3, 4], 0)
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineComeLine8: {
           ...initialBet,
           amount: 0,
           odds: 10,
         },
-      ],
+      },
     })
   })
   test('Loss working odds - Come Out 7', () => {
@@ -146,14 +146,14 @@ describe('resolveBets: Come Line', () => {
     const result = resolveBets(betMap, [3, 4], 0)
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineComeLine8: {
           ...initialBet,
           working: true,
           amount: 0,
           odds: 0,
         },
-      ],
+      },
     })
   })
 })

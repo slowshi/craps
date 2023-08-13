@@ -1,14 +1,13 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
+import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
-import { getRollValue } from '../../dice'
-
+import { DiceRoll, getRollValue, getRolls } from '../../dice'
 describe('resolveBets: Hard Ways', () => {
   const initialBet = {
     ...baseBetDefaults,
     amount: 10,
   }
-  const hardwayRolls = [
+  const hardwayRolls: DiceRoll[] = [
     [2, 2],
     [3, 3],
     [4, 4],
@@ -25,28 +24,29 @@ describe('resolveBets: Hard Ways', () => {
 
       expect(result).toEqual({
         betMap: {},
-        payouts: [
-          {
+        payouts: {
+          [`centerHard${value}`]: {
             ...initialBet,
             amount: value === 6 || value === 8 ? 80 : 100,
           },
-        ],
+        },
       })
     })
     test(`Loss Hard ${value}`, () => {
       const betMap: Partial<IBetMap> = {
-        centerHard6: initialBet,
+        [`centerHard${value}`]: initialBet,
       }
-      const result = resolveBets(betMap, [1, 5], 6)
+      const combinations = getRolls([value], [diceRoll])
+      const result = resolveBets(betMap, combinations[0], 6)
 
       expect(result).toEqual({
         betMap: {},
-        payouts: [
-          {
+        payouts: {
+          [`centerHard${value}`]: {
             ...initialBet,
             amount: 0,
           },
-        ],
+        },
       })
     })
   }
@@ -58,7 +58,7 @@ describe('resolveBets: Hard Ways', () => {
 
     expect(result).toEqual({
       betMap,
-      payouts: [],
+      payouts: {},
     })
   })
   test('No Action if called off', () => {
@@ -72,7 +72,7 @@ describe('resolveBets: Hard Ways', () => {
 
     expect(result).toEqual({
       betMap,
-      payouts: [],
+      payouts: {},
     })
   })
 })

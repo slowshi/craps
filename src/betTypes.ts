@@ -1,5 +1,5 @@
-import { DiceRoll, diceValues, getRollValue, getRolls, sortRollValues } from './dice'
-
+import { DiceRoll, getRollValue, getRolls } from './dice'
+import { IBetResolves } from './bets'
 export const placeBetOdds: { [key: number]: number } = {
   4: 9 / 5,
   5: 7 / 5,
@@ -49,10 +49,6 @@ export const hornBetPayouts: { [key: number]: number } = {
   11: 15 / 1,
   12: 30 / 1,
   7: 7 / 1,
-}
-export interface IBetResolves {
-  rolls: DiceRoll[]
-  pay: number
 }
 
 export const passLineBet = (): IBetResolves[] => [

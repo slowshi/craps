@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../../bets'
+import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 describe("resolveBets: Don't Pass", () => {
   const initialBet = {
@@ -14,12 +14,12 @@ describe("resolveBets: Don't Pass", () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineDontPassLine: {
           ...initialBet,
           amount: 20,
         },
-      ],
+      },
     })
   })
   test('Loss - Come out 7 || 11', () => {
@@ -30,12 +30,12 @@ describe("resolveBets: Don't Pass", () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineDontPassLine: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
   test('Push - Come out 12', () => {
@@ -48,7 +48,7 @@ describe("resolveBets: Don't Pass", () => {
       betMap: {
         lineDontPassLine: initialBet,
       },
-      payouts: [],
+      payouts: {},
     })
   })
   test('Set Point', () => {
@@ -61,7 +61,7 @@ describe("resolveBets: Don't Pass", () => {
       betMap: {
         lineDontPassLine8: initialBet,
       },
-      payouts: [],
+      payouts: {},
     })
   })
   test('Win - 7 Out', () => {
@@ -71,12 +71,12 @@ describe("resolveBets: Don't Pass", () => {
     const result = resolveBets(betMap, [3, 4], 8)
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineDontPassLine8: {
           ...initialBet,
           amount: 20,
         },
-      ],
+      },
     })
   })
   test('Loss - Point Winner', () => {
@@ -87,12 +87,12 @@ describe("resolveBets: Don't Pass", () => {
 
     expect(result).toEqual({
       betMap: {},
-      payouts: [
-        {
+      payouts: {
+        lineDontPassLine8: {
           ...initialBet,
           amount: 0,
         },
-      ],
+      },
     })
   })
 })

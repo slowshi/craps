@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test'
-import { baseBetDefaults } from '../bets'
+import { baseBetDefaults, IBetMap } from '../bets'
 import { resolvePointValue, resolveMakeBet } from '../game'
 
 describe('resolveMakeBet', () => {
@@ -38,6 +38,7 @@ describe('resolvePointValue', () => {
     expect(result).toEqual({
       dice: [4, 2],
       pointValue: 6,
+      sevenOut: false
     })
   })
 
@@ -47,6 +48,7 @@ describe('resolvePointValue', () => {
     expect(result).toEqual({
       dice: [4, 3],
       pointValue: 0,
+      sevenOut: true
     })
   })
 
@@ -56,6 +58,7 @@ describe('resolvePointValue', () => {
     expect(result).toEqual({
       dice: [4, 2],
       pointValue: 0,
+      sevenOut: false
     })
   })
 })

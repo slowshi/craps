@@ -1,4 +1,5 @@
 // import { IBetMap, resolveBets, resolvePointValue, rollDice } from './src'
+
 // const roll = rollDice()
 // let betMap: IBetMap = {
 //   linePassLine: {
@@ -18,5 +19,17 @@
 // payout = [...betResults.payouts]
 // console.log(roll, betMap, payout)
 
-import { centerHop } from './src'
-console.log('centerhop', centerHop([2, 3]))
+// import { centerHop } from './src'
+// console.log('centerhop', centerHop([2, 3]))
+
+import {CrapsGame, baseBetDefaults} from './src'
+
+const newGame = new CrapsGame({})
+newGame.makeBet('linePassLine', {
+  ...baseBetDefaults,
+  amount: 10
+})
+console.log(newGame.getBets())
+newGame.rollDice()
+console.log(newGame.getCurrentShooter())
+console.log(newGame.getBets())

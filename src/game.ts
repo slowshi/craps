@@ -1,24 +1,6 @@
 import { getRollValue, isValidPoint } from './dice'
 import { moveLineBet, updateBetMap, isEmptyBet, IBaseBet, IBetMap, getBetPayByRoll, baseBetDefaults } from './bets'
-import { betResolvesMap } from './betTypes'
-
-export const lineBetOdds: { [key: number]: number } = {
-  4: 6 / 3,
-  5: 6 / 4,
-  6: 6 / 5,
-  8: 6 / 5,
-  9: 6 / 4,
-  10: 6 / 3,
-}
-
-export const dontLineBetOdds: { [key: number]: number } = {
-  4: 1 / 2,
-  5: 2 / 3,
-  6: 5 / 6,
-  8: 5 / 6,
-  9: 2 / 3,
-  10: 1 / 2,
-}
+import { betResolvesMap, lineBetOdds, dontLineBetOdds } from './betTypes'
 
 export type LineKey = 'linePassLine' | 'lineDontPassLine' | 'lineComeLine' | 'lineDontComeLine'
 export const lineRolls = ['linePassLine', 'lineDontPassLine', 'lineComeLine', 'lineDontComeLine']
@@ -79,26 +61,29 @@ export const resolveBets = (betMap: Partial<IBetMap>, roll: DiceRoll, pointValue
   const resolveByType = (type: keyof IBetMap) => {
     const bet = newBetMap[type]
     if (bet) {
+      if (bet.off) return
+      if (type.includes('number') && pointValue === 0 && !bet.working) return
+
       const resolves = betResolvesMap[type]
-      const result = getBetPayByRoll(roll, resolves)
+      const payout = getBetPayByRoll(roll, resolves)
       let odds = 0
-      if (result !== 0) {
+      if (payout !== 0) {
         if (type.includes('lineComeLine')) {
-          if (pointValue === 0 && result < 0 && !bet.working) {
+          if (pointValue === 0 && payout < 0 && !bet.working) {
             odds = bet.odds
-          } else if (pointValue > 0 && result > 0) {
+          } else if (pointValue > 0 && payout > 0) {
             odds = Math.floor(bet.odds + bet.odds * lineBetOdds[pointValue])
           }
         }
-        if ((type.includes('lineDontPassLine') || type.includes('lineDontComeLine')) && result > 0 && pointValue > 0) {
+        if ((type.includes('lineDontPassLine') || type.includes('lineDontComeLine')) && payout > 0 && pointValue > 0) {
           odds = Math.floor(bet.odds + bet.odds * dontLineBetOdds[pointValue])
         }
-        if (type.includes('linePassLine') && result > 0 && pointValue > 0) {
+        if (type.includes('linePassLine') && payout > 0 && pointValue > 0) {
           odds = Math.floor(bet.odds + bet.odds * lineBetOdds[pointValue])
         }
         payouts.push({
           ...bet,
-          amount: bet.amount + bet.amount * result,
+          amount: bet.amount + bet.amount * payout,
           odds,
         })
         delete newBetMap[type]

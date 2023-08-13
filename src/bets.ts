@@ -4,7 +4,7 @@ export interface IBaseBet {
   amount: number
   odds: number
   working: boolean
-  vig: number
+  off: boolean
 }
 
 export interface IBetMap {
@@ -38,13 +38,33 @@ export interface IBetMap {
   lineDontComeLine10: IBaseBet
   centerField: IBaseBet
   centerAnyCraps: IBaseBet
-  centerAny7: IBaseBet
-  centerHorn: IBaseBet
+  center7: IBaseBet
+  center12: IBaseBet
+  center11: IBaseBet
+  center3: IBaseBet
+  center2: IBaseBet
   centerHop: IBaseBet
   centerHard4: IBaseBet
   centerHard6: IBaseBet
   centerHard8: IBaseBet
   centerHard10: IBaseBet
+  centerHop64: IBaseBet
+  centerHop63: IBaseBet
+  centerHop62: IBaseBet
+  centerHop61: IBaseBet
+  centerHop55: IBaseBet
+  centerHop54: IBaseBet
+  centerHop53: IBaseBet
+  centerHop52: IBaseBet
+  centerHop51: IBaseBet
+  centerHop44: IBaseBet
+  centerHop43: IBaseBet
+  centerHop42: IBaseBet
+  centerHop41: IBaseBet
+  centerHop33: IBaseBet
+  centerHop32: IBaseBet
+  centerHop31: IBaseBet
+  centerHop22: IBaseBet
   numbersPlace4: IBaseBet
   numbersPlace5: IBaseBet
   numbersPlace6: IBaseBet
@@ -70,6 +90,7 @@ export const baseBetDefaults: IBaseBet = {
   odds: 0,
   working: false,
   vig: 0,
+  off: false,
 }
 
 export interface IBetResolves {

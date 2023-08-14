@@ -22,14 +22,19 @@
 // import { centerHop } from './src'
 // console.log('centerhop', centerHop([2, 3]))
 
-import {CrapsGame, baseBetDefaults} from './src'
+import {baseBetDefaults, CrapsGameInstance, CrapsGame} from './src'
 
-const newGame = new CrapsGame({})
-newGame.makeBet('linePassLine', {
-  ...baseBetDefaults,
+const newGame:CrapsGameInstance = new CrapsGame({})
+newGame.makeBet('numbersPlace5', {
   amount: 10
 })
-console.log(newGame.getBets())
-newGame.rollDice()
-console.log(newGame.getCurrentShooter())
-console.log(newGame.getBets())
+newGame.makeBet('numbersPlace6', {
+  amount: 10
+})
+let count = 0
+while(count < 10) {
+  newGame.rollDice()
+  count++
+}
+console.log(newGame.getGameHistory())
+

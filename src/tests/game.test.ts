@@ -38,7 +38,8 @@ describe('resolvePointValue', () => {
     expect(result).toEqual({
       dice: [4, 2],
       pointValue: 6,
-      sevenOut: false
+      sevenOut: false,
+      pointHit: false
     })
   })
 
@@ -48,7 +49,8 @@ describe('resolvePointValue', () => {
     expect(result).toEqual({
       dice: [4, 3],
       pointValue: 0,
-      sevenOut: true
+      sevenOut: true,
+      pointHit: false
     })
   })
 
@@ -58,7 +60,8 @@ describe('resolvePointValue', () => {
     expect(result).toEqual({
       dice: [4, 2],
       pointValue: 0,
-      sevenOut: false
+      sevenOut: false,
+      pointHit: true
     })
   })
 })

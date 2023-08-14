@@ -3,7 +3,6 @@ export type LineKey = 'linePassLine' | 'lineDontPassLine' | 'lineComeLine' | 'li
 export const lineRolls = ['linePassLine', 'lineDontPassLine', 'lineComeLine', 'lineDontComeLine']
 
 export interface IBaseBet {
-  key: keyof IBetMap
   amount: number
   odds: number
   working: boolean
@@ -119,7 +118,99 @@ export const moveLineBet = (betMap: Partial<IBetMap>, lineKey: LineKey, pointVal
   }
   return betMap
 }
+export const passLineBetValidation = (
+  currentBet: Partial<IBaseBet>,
+  incomingBet: Partial<IBaseBet>,
+  pointValue: number,
+): boolean => {
+  if (pointValue === 0) {
+    if (incomingBet.odds && incomingBet.odds !== 0) return false
+  } else {
+    return false
+  }
+  return true
+}
 
+export const passLinePointValidation = (
+  currentBet: Partial<IBaseBet>,
+  incomingBet: Partial<IBaseBet>,
+  pointValue: number,
+): boolean => {
+  if (pointValue > 0) {
+    //cannot make new line contract with puck on
+    if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
+    //cannot add odds if there is no current bet
+    if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+    //cannot reduce pass line bet with puck on
+    if (incomingBet.amount !== undefined && incomingBet.amount < 0) return false
+  } else {
+    return false
+  }
+  return true
+}
+export const dontPassLinePointValidation = (
+  currentBet: Partial<IBaseBet>,
+  incomingBet: Partial<IBaseBet>,
+  pointValue: number,
+): boolean => {
+  if (pointValue > 0) {
+    //cannot make new line contract with puck on
+    if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
+    //cannot add odds if there is no current bet
+    if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+    //cannot increase dont line bet with puck on
+    if (incomingBet.amount !== undefined && incomingBet.amount > 0) return false
+  } else {
+    return false
+  }
+  return true
+}
+export const comeLineBetValidation = (
+  currentBet: Partial<IBaseBet>,
+  incomingBet: Partial<IBaseBet>,
+  pointValue: number,
+): boolean => {
+  //cannot make come bet with point off
+  if (pointValue === 0) {
+    return false
+  } else {
+    //cannot add odds if there is no current bet
+    if (incomingBet.odds && incomingBet.odds !== 0) return false
+  }
+  return true
+}
+
+export const comeLinePointValidation = (currentBet: Partial<IBaseBet>, incomingBet: Partial<IBaseBet>): boolean => {
+  //cannot make new line contract with puck on
+  if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
+  //cannot add odds if there is no current bet
+  if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+  //cannot reduce come line contract
+  if (incomingBet.amount !== undefined && incomingBet.amount < 0) return false
+  return true
+}
+export const dontComeLinePointValidation = (currentBet: Partial<IBaseBet>, incomingBet: Partial<IBaseBet>): boolean => {
+  //cannot make new line contract with puck on
+  if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
+  //cannot add odds if there is no current bet
+  if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+  //cannot increase dont come line contract
+  if (incomingBet.amount !== undefined && incomingBet.amount > 0) return false
+  return true
+}
+export const centerBetValidation = (currentBet: Partial<IBaseBet>, incomingBet: Partial<IBaseBet>): boolean => {
+  if (incomingBet.odds && incomingBet.odds !== 0) return false
+  if (incomingBet.off) return false
+  if (incomingBet.working) return false
+
+  return true
+}
+
+export const numbersBetValidation = (currentBet: Partial<IBaseBet>, incomingBet: Partial<IBaseBet>): boolean => {
+  if (incomingBet.odds && incomingBet.odds !== 0) return false
+
+  return true
+}
 export const isValidBet = (
   betMap: Partial<IBetMap>,
   betKey: string,
@@ -127,20 +218,29 @@ export const isValidBet = (
   pointValue: number,
 ): boolean => {
   const currentBet = betMap[betKey as keyof IBetMap]
-  if (!currentBet && bet.odds) {
-    //cant make odds bets without amount
-    return false
-  }
-  if (bet.odds && pointValue === 0) {
-    //cant make odds bets without valid point
-    return false
-  }
-  if ((betKey.includes('linePassLine') || betKey.includes('lineDontPassLine')) && pointValue > 0) {
-    //line bets with odds ok
-    if (bet.odds) {
-      return true
+  if (currentBet !== undefined && bet !== undefined) {
+    if (betKey === 'linePassLine' || betKey === 'lineDontPassLine') {
+      return passLineBetValidation(currentBet, bet, pointValue)
     }
-    //cant make line bets with valid point
+    if (betKey.includes('linePassLine')) {
+      return passLinePointValidation(currentBet, bet, pointValue)
+    }
+    if (betKey.includes('lineDontPassLine')) {
+      return dontPassLinePointValidation(currentBet, bet, pointValue)
+    }
+    if (betKey.includes('lineComeLine')) {
+      return comeLinePointValidation(currentBet, bet)
+    }
+    if (betKey.includes('lineDontComeLine')) {
+      return dontComeLinePointValidation(currentBet, bet)
+    }
+    if (betKey.includes('center')) {
+      return centerBetValidation(currentBet, bet)
+    }
+    if (betKey.includes('numbers')) {
+      return numbersBetValidation(currentBet, bet)
+    }
+  } else {
     return false
   }
   return true

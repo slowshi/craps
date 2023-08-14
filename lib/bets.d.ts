@@ -91,6 +91,14 @@ export interface IBetResolves {
 }
 export declare const updateBetMap: (betMap: Partial<IBetMap>, betKey: keyof IBetMap, bet: IBaseBet) => Partial<IBetMap>;
 export declare const moveLineBet: (betMap: Partial<IBetMap>, lineKey: LineKey, pointValue: number) => Partial<IBetMap>;
+export declare const passLineBetValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>, pointValue: number) => boolean;
+export declare const passLinePointValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>, pointValue: number) => boolean;
+export declare const dontPassLinePointValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>, pointValue: number) => boolean;
+export declare const comeLineBetValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>, pointValue: number) => boolean;
+export declare const comeLinePointValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>) => boolean;
+export declare const dontComeLinePointValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>) => boolean;
+export declare const centerBetValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>) => boolean;
+export declare const numbersBetValidation: (currentBet: Partial<IBetMap>, incomingBet: Partial<IBetMap>) => boolean;
 export declare const isValidBet: (betMap: Partial<IBetMap>, betKey: string, bet: Partial<IBaseBet>, pointValue: number) => boolean;
 export declare const isEmptyBet: (bet: IBaseBet) => boolean;
 export declare const getBetPayByRoll: (roll: DiceRoll, resolves: IBetResolves[]) => number;

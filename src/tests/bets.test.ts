@@ -8,6 +8,12 @@ import {
   isValidBet,
   getBetPayByRoll,
   isEmptyBet,
+  passLineBetValidation,
+  passLinePointValidation,
+  centerBetValidation,
+  numbersBetValidation,
+  comeLineBetValidation,
+  comeLinePointValidation
 } from '../bets'
 import { passLineBet } from '../betTypes'
 
@@ -100,13 +106,154 @@ describe('moveLineBet', () => {
     expect(result).toEqual(expectedResult)
   })
 })
+describe('Pass Line Validation', ()=>{
+  const initialBet = {
+    ...baseBetDefaults,
+    amount: 10,
+  }
+  test('can make new bet on Pass Line', ()=>{
+    const result = passLineBetValidation({}, {amount: 10}, 0)
+    expect(result).toEqual(true)
+  })
+  test('cannot make new line contract with puck on', ()=>{
+    const result = passLineBetValidation({}, {amount: 10}, 4)
+    expect(result).toEqual(false)
+  })
+  test('cannot add odds if there is no current bet', ()=>{
+    const result = passLineBetValidation({}, {odds: 10}, 4)
+    expect(result).toEqual(false)
+  })
+  test('cannot reduce pass line bet with puck on', ()=>{
+    const result = passLineBetValidation({...initialBet}, {amount: -10}, 4)
+    expect(result).toEqual(false)
+  })
+  test('cannot add odds with puck off', ()=>{
+    const result = passLineBetValidation({...initialBet}, {odds:10}, 0)
+    expect(result).toEqual(false)
+  })
+})
 
-describe('isValidBet  <<<<Test Later>>>', () => {
-  test('bet is valid', () => {})
-  test('cannot make Pass Line bet while puck is on', () => {})
-  test('cannot make come bet with puck off', () => {})
-  test('cannot make odds bet with puck off', () => {})
-  test('cannot make odds bet on come bet', () => {})
+describe('Pass Line Point Validation', ()=>{
+  const initialBet = {
+    ...baseBetDefaults,
+    amount: 10,
+  }
+  test('cannot make new line contract with puck on', ()=>{
+    const result = passLineBetValidation({}, {amount: 10}, 4)
+    expect(result).toEqual(false)
+  })
+  test('cannot add odds if there is no current bet', ()=>{
+    const result = passLineBetValidation({}, {odds: 10}, 4)
+    expect(result).toEqual(false)
+  })
+  test('cannot reduce pass line bet with puck on', ()=>{
+    const result = passLineBetValidation({...initialBet}, {amount: -10}, 4)
+    expect(result).toEqual(false)
+  })
+})
+describe('Come Line Validation', ()=>{
+  const initialBet = {
+    ...baseBetDefaults,
+    amount: 10,
+  }
+  test('can make new bet on Pass Line', ()=>{
+    const result = comeLineBetValidation({}, {amount: 10}, 4)
+    expect(result).toEqual(true)
+  })
+  test('cannot add odds if there is no current bet', ()=>{
+    const result = comeLineBetValidation({}, {amount: 10}, 0)
+    expect(result).toEqual(false)
+  })
+  test('cannot reduce pass line bet with puck on', ()=>{
+    const result = comeLineBetValidation({}, {odds: 10}, 4)
+    expect(result).toEqual(false)
+  })
+})
+describe('Come Line Point Validation', ()=>{
+  const initialBet = {
+    ...baseBetDefaults,
+    amount: 10,
+  }
+  test('cannot make new come line contract with puck on', ()=>{
+    const result = comeLinePointValidation({}, {amount: 10}, 4)
+    expect(result).toEqual(false)
+  })
+  test('cannot add odds if there is no current bet', ()=>{
+    const result = comeLinePointValidation({}, {odds: 10}, 4)
+    expect(result).toEqual(false)
+  })
+  test('cannot reduce come line contract', ()=>{
+    const result = comeLinePointValidation({...initialBet}, {amount: -10}, 0)
+    expect(result).toEqual(false)
+  })
+})
+describe('Numbers Bet Validation', ()=>{
+  const initialBet = {
+    ...baseBetDefaults,
+    amount: 10,
+  }
+  test('can make new bet', ()=>{
+    const result = numbersBetValidation({}, {amount: 10}, 4)
+    expect(result).toEqual(true)
+  })
+  test('cannot add odds if there is no current bet', ()=>{
+    const result = numbersBetValidation({}, {amount: 10, odds: 10}, 4)
+    expect(result).toEqual(false)
+  })
+})
+describe('Center Bet Validation', ()=>{
+  const initialBet = {
+    ...baseBetDefaults,
+    amount: 10,
+  }
+  test('can make new bet', ()=>{
+    const result = centerBetValidation({}, {amount: 10}, 4)
+    expect(result).toEqual(true)
+  })
+  test('cannot add odds if there is no current bet', ()=>{
+    const result = centerBetValidation({}, {amount: 10, odds: 10}, 4)
+    expect(result).toEqual(false)
+  })
+})
+describe('isValidBet', () => {
+  const initialBet = {
+    ...baseBetDefaults,
+    amount: 10
+  }
+  test('valid bet', () => {
+    const validBet = isValidBet({}, 'linePassLine', {amount: 10}, 0)
+    expect(validBet).toEqual(true)
+  })
+  test('odds not allowed on line bets with puck off', () => {
+    const validBet = isValidBet({}, 'linePassLine', {amount: 10, odds: 10}, 0)
+    expect(validBet).toEqual(false)
+  })
+  test('odds not allowed on numbers bets', () => {
+    const notValidBet = isValidBet({}, 'numbersPlace6', {amount: 10, odds: 10}, 6)
+    expect(notValidBet).toEqual(false)
+  })
+  test('odds not allowed on center bets', () => {
+    const notValidBet = isValidBet({}, 'centerField', {amount: 10, odds: 10}, 6)
+    expect(notValidBet).toEqual(false)
+  })
+  test('cannot remove from Pass Line bet with Puck ON', () => {
+    const notValidBet = isValidBet({linePassLine5: {...initialBet}}, 'linePassLine5', {amount: -10}, 6)
+    expect(notValidBet).toEqual(false)
+  })
+  test('cannot add odds to a bet you are not on', () => {
+    const validBet = isValidBet({linePassLine5: {...initialBet}}, 'linePassLine5', { odds:10 }, 6)
+    expect(validBet).toEqual(true)
+
+    const notValidBet = isValidBet({}, 'linePassLine5', {odds: 10}, 6)
+    expect(notValidBet).toEqual(false)
+  })
+  // test('cannot make odds bet on Come Line Bet', () => {
+  //   const validBet = isValidBet({}, 'linePassLine', {odds: 10}, 6)
+  //   expect(validBet).toEqual(false)
+  // })
+  test('cannot make Come Bet with Puck OFF', () => {})
+  test('cannot make odds bet with Puck OFF', () => {})
+
 })
 
 describe('getBetPayByRoll', () => {

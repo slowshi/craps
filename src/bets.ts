@@ -217,32 +217,29 @@ export const isValidBet = (
   bet: Partial<IBaseBet>,
   pointValue: number,
 ): boolean => {
-  const currentBet = betMap[betKey as keyof IBetMap]
-  if (currentBet !== undefined && bet !== undefined) {
-    if (betKey === 'linePassLine' || betKey === 'lineDontPassLine') {
-      return passLineBetValidation(currentBet, bet, pointValue)
-    }
-    if (betKey.includes('linePassLine')) {
-      return passLinePointValidation(currentBet, bet, pointValue)
-    }
-    if (betKey.includes('lineDontPassLine')) {
-      return dontPassLinePointValidation(currentBet, bet, pointValue)
-    }
-    if (betKey.includes('lineComeLine')) {
-      return comeLinePointValidation(currentBet, bet)
-    }
-    if (betKey.includes('lineDontComeLine')) {
-      return dontComeLinePointValidation(currentBet, bet)
-    }
-    if (betKey.includes('center')) {
-      return centerBetValidation(currentBet, bet)
-    }
-    if (betKey.includes('numbers')) {
-      return numbersBetValidation(currentBet, bet)
-    }
-  } else {
-    return false
+  const currentBet = betMap[betKey as keyof IBetMap] || {}
+  if (betKey === 'linePassLine' || betKey === 'lineDontPassLine') {
+    return passLineBetValidation(currentBet, bet, pointValue)
   }
+  if (betKey.includes('linePassLine')) {
+    return passLinePointValidation(currentBet, bet, pointValue)
+  }
+  if (betKey.includes('lineDontPassLine')) {
+    return dontPassLinePointValidation(currentBet, bet, pointValue)
+  }
+  if (betKey.includes('lineComeLine')) {
+    return comeLinePointValidation(currentBet, bet)
+  }
+  if (betKey.includes('lineDontComeLine')) {
+    return dontComeLinePointValidation(currentBet, bet)
+  }
+  if (betKey.includes('center')) {
+    return centerBetValidation(currentBet, bet)
+  }
+  if (betKey.includes('numbers')) {
+    return numbersBetValidation(currentBet, bet)
+  }
+
   return true
 }
 

@@ -1,4 +1,3 @@
-import { describe, test, expect } from 'bun:test'
 import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 describe('resolveBets: Buy', () => {
@@ -13,13 +12,14 @@ describe('resolveBets: Buy', () => {
     const result = resolveBets(betMap, [2, 2], 6)
 
     expect(result).toEqual({
-      betMap: {},
+      betMap,
       payouts: {
-        numbersBuy4:{
+        numbersBuy4: {
           ...initialBet,
-          amount: 145,
+          amount: 95,
         },
       },
+      delta: 95,
     })
   })
   test('Loss', () => {
@@ -31,11 +31,12 @@ describe('resolveBets: Buy', () => {
     expect(result).toEqual({
       betMap: {},
       payouts: {
-        numbersBuy4:{
+        numbersBuy4: {
           ...initialBet,
           amount: 0,
         },
       },
+      delta: -50,
     })
   })
   test('No Action', () => {
@@ -47,6 +48,7 @@ describe('resolveBets: Buy', () => {
     expect(result).toEqual({
       betMap,
       payouts: {},
+      delta: 0,
     })
   })
 
@@ -62,6 +64,7 @@ describe('resolveBets: Buy', () => {
     expect(result).toEqual({
       betMap,
       payouts: {},
+      delta: 0,
     })
   })
 
@@ -74,6 +77,7 @@ describe('resolveBets: Buy', () => {
     expect(result).toEqual({
       betMap,
       payouts: {},
+      delta: 0,
     })
   })
 
@@ -89,12 +93,13 @@ describe('resolveBets: Buy', () => {
     expect(result).toEqual({
       betMap: {},
       payouts: {
-        numbersBuy4:{
+        numbersBuy4: {
           ...initialBet,
           amount: 0,
           working: true,
         },
       },
+      delta: -50,
     })
   })
 })

@@ -1,4 +1,3 @@
-import { describe, test, expect } from 'bun:test'
 import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 describe('resolveBets: Place', () => {
@@ -13,13 +12,48 @@ describe('resolveBets: Place', () => {
     const result = resolveBets(betMap, [3, 3], 6)
 
     expect(result).toEqual({
-      betMap: {},
+      betMap,
       payouts: {
         numbersPlace6: {
           ...initialBet,
-          amount: 26,
+          amount: 14,
         },
       },
+      delta: 14,
+    })
+  })
+  test('isBubbleCraps returns fractional dollars', () => {
+    const betMap: Partial<IBetMap> = {
+      numbersPlace6: { ...initialBet, amount: 1 },
+    }
+    const result = resolveBets(betMap, [3, 3], 6, true)
+
+    expect(result).toEqual({
+      betMap,
+      payouts: {
+        numbersPlace6: {
+          ...initialBet,
+          amount: 1.16,
+        },
+      },
+      delta: 1.16,
+    })
+  })
+  test('Not isBubbleCraps returns whole chip value', () => {
+    const betMap: Partial<IBetMap> = {
+      numbersPlace6: { ...initialBet, amount: 1 },
+    }
+    const result = resolveBets(betMap, [3, 3], 6)
+
+    expect(result).toEqual({
+      betMap,
+      payouts: {
+        numbersPlace6: {
+          ...initialBet,
+          amount: 1,
+        },
+      },
+      delta: 1,
     })
   })
   test('Loss', () => {
@@ -36,6 +70,7 @@ describe('resolveBets: Place', () => {
           amount: 0,
         },
       },
+      delta: -12,
     })
   })
   test('No Action', () => {
@@ -47,6 +82,7 @@ describe('resolveBets: Place', () => {
     expect(result).toEqual({
       betMap,
       payouts: {},
+      delta: 0,
     })
   })
 
@@ -62,6 +98,7 @@ describe('resolveBets: Place', () => {
     expect(result).toEqual({
       betMap,
       payouts: {},
+      delta: 0,
     })
   })
 
@@ -74,6 +111,7 @@ describe('resolveBets: Place', () => {
     expect(result).toEqual({
       betMap,
       payouts: {},
+      delta: 0,
     })
   })
 
@@ -95,6 +133,7 @@ describe('resolveBets: Place', () => {
           working: true,
         },
       },
+      delta: -12,
     })
   })
 })

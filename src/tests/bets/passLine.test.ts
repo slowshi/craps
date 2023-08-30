@@ -1,4 +1,3 @@
-import { describe, test, expect } from 'bun:test'
 import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 
@@ -14,13 +13,14 @@ describe('resolveBets: Pass Line', () => {
     const result = resolveBets(betMap, [4, 3], 0)
 
     expect(result).toEqual({
-      betMap: {},
+      betMap,
       payouts: {
         linePassLine: {
           ...initialBet,
-          amount: 20,
+          amount: 10,
         },
       },
+      delta: 10,
     })
   })
   test('Loss - Come out any craps', () => {
@@ -37,6 +37,7 @@ describe('resolveBets: Pass Line', () => {
           amount: 0,
         },
       },
+      delta: -10,
     })
   })
   test('Come out set Point', () => {
@@ -50,6 +51,7 @@ describe('resolveBets: Pass Line', () => {
         linePassLine6: initialBet,
       },
       payouts: {},
+      delta: 0,
     })
   })
   test('Loss - Point 7 Out', () => {
@@ -66,6 +68,7 @@ describe('resolveBets: Pass Line', () => {
           amount: 0,
         },
       },
+      delta: -10,
     })
   })
   test('Winner point', () => {
@@ -75,13 +78,16 @@ describe('resolveBets: Pass Line', () => {
     const result = resolveBets(betMap, [4, 2], 6)
 
     expect(result).toEqual({
-      betMap: {},
+      betMap: {
+        linePassLine: initialBet,
+      },
       payouts: {
         linePassLine6: {
           ...initialBet,
-          amount: 20,
+          amount: 10,
         },
       },
+      delta: 10,
     })
   })
   test('Winner point with odds', () => {
@@ -91,14 +97,16 @@ describe('resolveBets: Pass Line', () => {
     const result = resolveBets(betMap, [4, 2], 6)
 
     expect(result).toEqual({
-      betMap: {},
+      betMap: {
+        linePassLine: initialBet,
+      },
       payouts: {
         linePassLine6: {
           ...initialBet,
-          amount: 20,
           odds: 44,
         },
       },
+      delta: 54,
     })
   })
   test('Point 7 out with odds', () => {
@@ -115,6 +123,7 @@ describe('resolveBets: Pass Line', () => {
           amount: 0,
         },
       },
+      delta: -30,
     })
   })
 })

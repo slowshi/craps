@@ -1,4 +1,3 @@
-import { describe, test, expect } from 'bun:test'
 import { baseBetDefaults, IBetMap } from '../bets'
 import { resolvePointValue, resolveMakeBet } from '../game'
 
@@ -39,7 +38,7 @@ describe('resolvePointValue', () => {
       dice: [4, 2],
       pointValue: 6,
       sevenOut: false,
-      pointHit: false
+      pointHit: false,
     })
   })
 
@@ -50,7 +49,7 @@ describe('resolvePointValue', () => {
       dice: [4, 3],
       pointValue: 0,
       sevenOut: true,
-      pointHit: false
+      pointHit: false,
     })
   })
 
@@ -61,7 +60,7 @@ describe('resolvePointValue', () => {
       dice: [4, 2],
       pointValue: 0,
       sevenOut: false,
-      pointHit: true
+      pointHit: true,
     })
   })
 })

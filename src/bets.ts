@@ -1,6 +1,15 @@
+import { betResolvesMap } from './betTypes'
 import { DiceRoll, sortRollValues } from './dice'
 export type LineKey = 'linePassLine' | 'lineDontPassLine' | 'lineComeLine' | 'lineDontComeLine'
 export const lineRolls = ['linePassLine', 'lineDontPassLine', 'lineComeLine', 'lineDontComeLine']
+
+export interface IATSBet {
+  amount: number
+  rollValues: number[]
+  odds: number
+  working: boolean
+  off: boolean
+}
 
 export interface IBaseBet {
   amount: number
@@ -38,6 +47,9 @@ export interface IBetMap {
   lineDontComeLine8: IBaseBet
   lineDontComeLine9: IBaseBet
   lineDontComeLine10: IBaseBet
+  centerAll: IATSBet
+  centerSmall: IATSBet
+  centerTall: IATSBet
   centerField: IBaseBet
   centerAnyCraps: IBaseBet
   center7: IBaseBet
@@ -87,6 +99,15 @@ export interface IBetMap {
   numbersLay10: IBaseBet
 }
 
+export const tableOddsMultiples: { [key: number]: number } = {
+  4: 3,
+  5: 4,
+  6: 5,
+  8: 5,
+  9: 4,
+  10: 3,
+}
+
 export const baseBetDefaults: IBaseBet = {
   amount: 0,
   odds: 0,
@@ -110,11 +131,25 @@ export const moveLineBet = (betMap: Partial<IBetMap>, lineKey: LineKey, pointVal
   if ((lineKey === 'lineDontPassLine' || lineKey === 'lineDontComeLine') && pointValue === 12) {
     return betMap
   }
+  const existingComeBet: IBaseBet | undefined = betMap[`${lineKey}${pointValue}` as keyof IBetMap]
   const currentBet = betMap[lineKey]
   if (currentBet) {
-    const newBetMap = updateBetMap(betMap, `${lineKey}${pointValue}` as keyof IBetMap, currentBet)
-    delete newBetMap[lineKey]
-    return newBetMap
+    if (existingComeBet !== undefined) {
+      return {
+        ...betMap,
+        [lineKey]: {
+          ...currentBet,
+          odds: 0,
+        },
+      }
+    } else {
+      const newBetMap = {
+        ...betMap,
+        [`${lineKey}${pointValue}`]: currentBet,
+      }
+      delete newBetMap[lineKey]
+      return newBetMap
+    }
   }
   return betMap
 }
@@ -141,6 +176,15 @@ export const passLinePointValidation = (
     if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
     //cannot add odds if there is no current bet
     if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+    //cannot add more odds than max
+    if (
+      incomingBet.odds !== undefined &&
+      currentBet.odds !== undefined &&
+      currentBet.amount !== undefined &&
+      incomingBet.odds > 0 &&
+      currentBet.odds + incomingBet.odds > currentBet.amount * tableOddsMultiples[pointValue]
+    )
+      return false
     //cannot reduce pass line bet with puck on
     if (incomingBet.amount !== undefined && incomingBet.amount < 0) return false
   } else {
@@ -157,7 +201,25 @@ export const dontPassLinePointValidation = (
     //cannot make new line contract with puck on
     if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
     //cannot add odds if there is no current bet
-    if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+    if (incomingBet.odds !== undefined && incomingBet.odds !== 0 && !currentBet?.amount) return false
+    //cannot add more odds than the amount 6x
+    if (
+      incomingBet.odds !== undefined &&
+      currentBet.amount !== undefined &&
+      currentBet.odds !== undefined &&
+      incomingBet.odds > 0 &&
+      currentBet.odds + incomingBet.odds > currentBet.amount * 6
+    )
+      return false
+    //cannot remove amount where odds where new amount is greater than max odds
+    if (
+      incomingBet.amount !== undefined &&
+      currentBet.amount !== undefined &&
+      currentBet.odds !== undefined &&
+      incomingBet.amount < 0 &&
+      currentBet.odds > (currentBet.amount + incomingBet.amount) * 6
+    )
+      return false
     //cannot increase dont line bet with puck on
     if (incomingBet.amount !== undefined && incomingBet.amount > 0) return false
   } else {
@@ -180,11 +242,25 @@ export const comeLineBetValidation = (
   return true
 }
 
-export const comeLinePointValidation = (currentBet: Partial<IBaseBet>, incomingBet: Partial<IBaseBet>): boolean => {
+export const comeLinePointValidation = (
+  currentBet: Partial<IBaseBet>,
+  incomingBet: Partial<IBaseBet>,
+  betKey: string,
+): boolean => {
   //cannot make new line contract with puck on
   if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
   //cannot add odds if there is no current bet
   if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+  //cannot add more odds than max
+  const pointValue = betKey.replace('lineComeLine', '')
+  if (
+    incomingBet.odds !== undefined &&
+    currentBet.odds !== undefined &&
+    currentBet.amount !== undefined &&
+    incomingBet.odds > 0 &&
+    currentBet.odds + incomingBet.odds > currentBet.amount * tableOddsMultiples[Number(pointValue)]
+  )
+    return false
   //cannot reduce come line contract
   if (incomingBet.amount !== undefined && incomingBet.amount < 0) return false
   return true
@@ -194,8 +270,80 @@ export const dontComeLinePointValidation = (currentBet: Partial<IBaseBet>, incom
   if (incomingBet.amount !== undefined && incomingBet.amount > 0 && !currentBet?.amount) return false
   //cannot add odds if there is no current bet
   if (incomingBet.odds && incomingBet.odds !== 0 && !currentBet?.amount) return false
+  //cannot add more odds than the amount 6x
+  if (
+    incomingBet.odds !== undefined &&
+    currentBet.odds !== undefined &&
+    currentBet.amount !== undefined &&
+    incomingBet.odds > 0 &&
+    currentBet.odds + incomingBet.odds > currentBet.amount * 6
+  )
+    return false
+  //cannot remove amount where odds where new amount is greater than max odds
+  if (
+    incomingBet.amount !== undefined &&
+    currentBet.amount !== undefined &&
+    incomingBet.amount < 0 &&
+    currentBet.odds &&
+    currentBet.odds > (currentBet.amount + incomingBet.amount) * 6
+  )
+    return false
   //cannot increase dont come line contract
   if (incomingBet.amount !== undefined && incomingBet.amount > 0) return false
+  return true
+}
+export const centerATSValidation = (
+  currentBet: Partial<IATSBet>,
+  incomingBet: Partial<IATSBet>,
+  betMap: Partial<IBetMap>,
+  betKey: string,
+): boolean => {
+  if (incomingBet.odds && incomingBet.odds !== 0) return false
+  if (incomingBet.off) return false
+  if (incomingBet.working) return false
+  // if (betKey === 'centerSmall' || betKey === 'centerTall') {
+  //   return true
+  // }
+  //cannot
+  //cannot make new ATS bet when rolls have started
+  if (incomingBet.amount && incomingBet.amount !== 0 && currentBet.rollValues && currentBet.rollValues.length > 0)
+    return false
+  if (betKey === 'centerSmall') {
+    const smallBets = [2, 3, 4, 5, 6]
+    if (betMap['centerAll'] && betMap['centerAll'].rollValues && betMap['centerAll'].rollValues.length) {
+      const valuesLeft = smallBets.filter((num) => betMap['centerAll']?.rollValues.indexOf(num) === -1)
+      if (valuesLeft.length === 0) return true
+      return false
+    }
+    if (betMap['centerTall'] && betMap['centerTall'].rollValues && betMap['centerTall'].rollValues.length) {
+      const valuesLeft = smallBets.filter((num) => betMap['centerAll']?.rollValues.indexOf(num) === -1)
+      if (valuesLeft.length === 0) return true
+      return false
+    }
+  }
+  if (betKey === 'centerTall') {
+    const tallBets = [8, 9, 10, 11, 12]
+    if (betMap['centerAll'] && betMap['centerAll'].rollValues && betMap['centerAll'].rollValues.length) {
+      const valuesLeft = tallBets.filter((num) => betMap['centerAll']?.rollValues.indexOf(num) === -1)
+      if (valuesLeft.length === 0) return true
+      return false
+    }
+    if (betMap['centerSmall'] && betMap['centerSmall'].rollValues && betMap['centerSmall'].rollValues.length) {
+      const valuesLeft = tallBets.filter((num) => betMap['centerSmall']?.rollValues.indexOf(num) === -1)
+      if (valuesLeft.length === 0) return true
+      return false
+    }
+  }
+  if (betKey === 'centerAll') {
+    if (betMap['centerTall'] && betMap['centerTall'].rollValues && betMap['centerTall'].rollValues.length) {
+      if (currentBet.rollValues?.length === 0) return true
+      return false
+    }
+    if (betMap['centerSmall'] && betMap['centerSmall'].rollValues && betMap['centerSmall'].rollValues.length) {
+      if (currentBet.rollValues?.length === 0) return true
+      return false
+    }
+  }
   return true
 }
 export const centerBetValidation = (currentBet: Partial<IBaseBet>, incomingBet: Partial<IBaseBet>): boolean => {
@@ -211,14 +359,17 @@ export const numbersBetValidation = (currentBet: Partial<IBaseBet>, incomingBet:
 
   return true
 }
+
+const betKeys = Object.keys(betResolvesMap)
 export const isValidBet = (
   betMap: Partial<IBetMap>,
   betKey: string,
   bet: Partial<IBaseBet>,
   pointValue: number,
 ): boolean => {
+  if (betKeys.indexOf(betKey) < 0) return false
   const currentBet = betMap[betKey as keyof IBetMap] || {}
-  if (betKey === 'linePassLine' || betKey === 'lineDontPassLine') {
+  if (betKey === 'linePassLine' || (betKey === 'lineDontPassLine' && pointValue === 0)) {
     return passLineBetValidation(currentBet, bet, pointValue)
   }
   if (betKey.includes('linePassLine')) {
@@ -227,11 +378,17 @@ export const isValidBet = (
   if (betKey.includes('lineDontPassLine')) {
     return dontPassLinePointValidation(currentBet, bet, pointValue)
   }
+  if (betKey === 'lineComeLine' || betKey === 'lineDontComeLine') {
+    return comeLineBetValidation(currentBet, bet, pointValue)
+  }
   if (betKey.includes('lineComeLine')) {
-    return comeLinePointValidation(currentBet, bet)
+    return comeLinePointValidation(currentBet, bet, betKey)
   }
   if (betKey.includes('lineDontComeLine')) {
     return dontComeLinePointValidation(currentBet, bet)
+  }
+  if (betKey === 'centerAll' || betKey === 'centerSmall' || betKey === 'centerTall') {
+    return centerATSValidation(currentBet, bet, betMap, betKey)
   }
   if (betKey.includes('center')) {
     return centerBetValidation(currentBet, bet)

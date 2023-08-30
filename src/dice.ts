@@ -1,5 +1,6 @@
 export type Dice6 = 1 | 2 | 3 | 4 | 5 | 6
 export type DiceRoll = [Dice6, Dice6]
+export type RollValues = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 export const validPoints = [4, 5, 6, 8, 9, 10]
 export const diceValues: { [roll: number]: DiceRoll[] } = {
   2: [[1, 1]],
@@ -69,5 +70,5 @@ export const getRolls = (rollValues: number[], excluded: DiceRoll[] = []): DiceR
     return [...acc, ...diceValues[value]]
   }, [] as DiceRoll[])
   const cleanedExcluded = excluded.map((roll) => sortRollValues(roll).toString())
-  return allRolls.filter((roll) => cleanedExcluded.indexOf(roll.toString()) == -1)
+  return allRolls.filter((roll) => cleanedExcluded.indexOf(roll.toString()) === -1)
 }

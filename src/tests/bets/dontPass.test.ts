@@ -1,4 +1,3 @@
-import { describe, test, expect } from 'bun:test'
 import { baseBetDefaults, IBetMap } from '../../bets'
 import { resolveBets } from '../../game'
 describe("resolveBets: Don't Pass", () => {
@@ -13,13 +12,14 @@ describe("resolveBets: Don't Pass", () => {
     const result = resolveBets(betMap, [1, 2], 0)
 
     expect(result).toEqual({
-      betMap: {},
+      betMap,
       payouts: {
         lineDontPassLine: {
           ...initialBet,
-          amount: 20,
+          amount: 10,
         },
       },
+      delta: 10,
     })
   })
   test('Loss - Come out 7 || 11', () => {
@@ -36,6 +36,7 @@ describe("resolveBets: Don't Pass", () => {
           amount: 0,
         },
       },
+      delta: -10,
     })
   })
   test('Push - Come out 12', () => {
@@ -49,6 +50,7 @@ describe("resolveBets: Don't Pass", () => {
         lineDontPassLine: initialBet,
       },
       payouts: {},
+      delta: 0,
     })
   })
   test('Set Point', () => {
@@ -62,6 +64,7 @@ describe("resolveBets: Don't Pass", () => {
         lineDontPassLine8: initialBet,
       },
       payouts: {},
+      delta: 0,
     })
   })
   test('Win - 7 Out', () => {
@@ -70,13 +73,35 @@ describe("resolveBets: Don't Pass", () => {
     }
     const result = resolveBets(betMap, [3, 4], 8)
     expect(result).toEqual({
-      betMap: {},
+      betMap: {
+        lineDontPassLine: initialBet,
+      },
       payouts: {
         lineDontPassLine8: {
           ...initialBet,
-          amount: 20,
+          amount: 10,
         },
       },
+      delta: 10,
+    })
+  })
+  test('Win - 7 Out with odds', () => {
+    const betMap: Partial<IBetMap> = {
+      lineDontPassLine4: { ...initialBet, odds: 20 },
+    }
+    const result = resolveBets(betMap, [3, 4], 4)
+    expect(result).toEqual({
+      betMap: {
+        lineDontPassLine: initialBet,
+      },
+      payouts: {
+        lineDontPassLine4: {
+          ...initialBet,
+          amount: 10,
+          odds: 30,
+        },
+      },
+      delta: 40,
     })
   })
   test('Loss - Point Winner', () => {
@@ -93,6 +118,7 @@ describe("resolveBets: Don't Pass", () => {
           amount: 0,
         },
       },
+      delta: -10,
     })
   })
 })

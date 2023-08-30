@@ -1,5 +1,5 @@
-import { DiceRoll, getRollValue, getRolls } from './dice'
 import { IBetResolves } from './bets'
+import { DiceRoll, getRollValue, getRolls } from './dice'
 export const placeBetOdds: { [key: number]: number } = {
   4: 9 / 5,
   5: 7 / 5,
@@ -231,10 +231,69 @@ export const centerHop = (diceRoll: DiceRoll): IBetResolves[] => {
     },
     {
       rolls: getRolls([value], combinations),
+      pay: 15,
+    },
+  ]
+}
+export const centerHopHardWay = (diceRoll: DiceRoll): IBetResolves[] => {
+  const value = getRollValue(diceRoll)
+  const combinations = getRolls([value], [diceRoll])
+  return [
+    {
+      rolls: getRolls([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], [diceRoll]),
+      pay: -1,
+    },
+    {
+      rolls: getRolls([value], combinations),
       pay: 30,
     },
   ]
 }
+export const centerATS = (): IBetResolves[] => {
+  return [
+    {
+      rolls: getRolls([7], []),
+      pay: -1,
+    },
+  ]
+}
+export const centerAllResolveWin = (rollValues: number[]): IBetResolves[] => {
+  const valuesLeft = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12].filter((num) => rollValues.indexOf(num) === -1)
+  if (valuesLeft.length === 1) {
+    return [
+      {
+        rolls: getRolls([valuesLeft[0]], []),
+        pay: 149,
+      },
+    ]
+  }
+  return []
+}
+export const centerSmallResolveWin = (rollValues: number[]): IBetResolves[] => {
+  const valuesLeft = [2, 3, 4, 5, 6].filter((num) => rollValues.indexOf(num) === -1)
+  if (valuesLeft.length === 1) {
+    return [
+      {
+        rolls: getRolls([valuesLeft[0]], []),
+        pay: 29,
+      },
+    ]
+  }
+  return []
+}
+export const centerTallResolveWin = (rollValues: number[]): IBetResolves[] => {
+  const valuesLeft = [8, 9, 10, 11, 12].filter((num) => rollValues.indexOf(num) === -1)
+  if (valuesLeft.length === 1) {
+    return [
+      {
+        rolls: getRolls([valuesLeft[0]], []),
+        pay: 29,
+      },
+    ]
+  }
+  return []
+}
+export const centerATSKeys = ['centerAll', 'centerSmall', 'centerTall']
 export const betResolvesMap: { [key: string]: IBetResolves[] } = {
   linePassLine: passLineBet(),
   linePassLine4: passLinePoint(4),
@@ -264,6 +323,9 @@ export const betResolvesMap: { [key: string]: IBetResolves[] } = {
   lineDontComeLine8: dontPassLinePoint(8),
   lineDontComeLine9: dontPassLinePoint(9),
   lineDontComeLine10: dontPassLinePoint(10),
+  centerAll: centerATS(),
+  centerTall: centerATS(),
+  centerSmall: centerATS(),
   centerField: centerFieldBet(),
   centerAnyCraps: centerAnyCrapsBet(),
   centerHard6: centerHard6Bet(),
@@ -279,19 +341,19 @@ export const betResolvesMap: { [key: string]: IBetResolves[] } = {
   centerHop63: centerHop([6, 3]),
   centerHop62: centerHop([6, 2]),
   centerHop61: centerHop([6, 1]),
-  centerHop55: centerHop([5, 5]),
   centerHop54: centerHop([5, 4]),
   centerHop53: centerHop([5, 3]),
   centerHop52: centerHop([5, 2]),
   centerHop51: centerHop([5, 1]),
-  centerHop44: centerHop([4, 4]),
   centerHop43: centerHop([4, 3]),
   centerHop42: centerHop([4, 2]),
   centerHop41: centerHop([4, 1]),
-  centerHop33: centerHop([3, 3]),
   centerHop32: centerHop([3, 2]),
   centerHop31: centerHop([3, 1]),
-  centerHop22: centerHop([2, 2]),
+  centerHop55: centerHopHardWay([5, 5]),
+  centerHop44: centerHopHardWay([4, 4]),
+  centerHop33: centerHopHardWay([3, 3]),
+  centerHop22: centerHopHardWay([2, 2]),
   numbersPlace4: numbersPlace(4),
   numbersPlace5: numbersPlace(5),
   numbersPlace6: numbersPlace(6),

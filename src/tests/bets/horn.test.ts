@@ -5,7 +5,7 @@ const horn: number[] = [2, 3, 11, 12, 7]
 const expectedPayouts: {
   [key: number]: number
 } = {
-  7: 70,
+  7: 40,
   11: 150,
   12: 300,
   2: 300,

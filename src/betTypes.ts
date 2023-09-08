@@ -27,12 +27,12 @@ export const layBetOdds: { [key: number]: number } = {
   10: 1 / 2,
 }
 export const lineBetOdds: { [key: number]: number } = {
-  4: 6 / 3,
-  5: 6 / 4,
+  4: 2 / 1,
+  5: 3 / 2,
   6: 6 / 5,
   8: 6 / 5,
-  9: 6 / 4,
-  10: 6 / 3,
+  9: 3 / 2,
+  10: 2 / 1,
 }
 
 export const dontLineBetOdds: { [key: number]: number } = {
@@ -48,7 +48,7 @@ export const hornBetPayouts: { [key: number]: number } = {
   3: 15 / 1,
   11: 15 / 1,
   12: 30 / 1,
-  7: 7 / 1,
+  7: 4 / 1,
 }
 
 export const passLineBet = (): IBetResolves[] => [
@@ -139,7 +139,7 @@ export const centerHard6Bet = (): IBetResolves[] => [
         [1, 5],
       ],
     ),
-    pay: 7,
+    pay: 9,
   },
 ]
 export const centerHard8Bet = (): IBetResolves[] => [
@@ -155,7 +155,7 @@ export const centerHard8Bet = (): IBetResolves[] => [
         [5, 3],
       ],
     ),
-    pay: 7,
+    pay: 9,
   },
 ]
 export const centerHard4Bet = (): IBetResolves[] => [
@@ -165,7 +165,7 @@ export const centerHard4Bet = (): IBetResolves[] => [
   },
   {
     rolls: getRolls([4], [[1, 4]]),
-    pay: 9,
+    pay: 7,
   },
 ]
 export const centerHard10Bet = (): IBetResolves[] => [
@@ -175,7 +175,7 @@ export const centerHard10Bet = (): IBetResolves[] => [
   },
   {
     rolls: getRolls([10], [[6, 4]]),
-    pay: 9,
+    pay: 7,
   },
 ]
 export const numbersPlace = (value: number): IBetResolves[] => [
@@ -201,7 +201,7 @@ export const numbersBuy = (value: number): IBetResolves[] => [
 export const numbersLay = (value: number): IBetResolves[] => [
   {
     rolls: getRolls([7], []),
-    pay: layBetOdds[value],
+    pay: layBetOdds[value] * 0.95,
   },
   {
     rolls: getRolls([value], []),
@@ -263,7 +263,7 @@ export const centerAllResolveWin = (rollValues: number[]): IBetResolves[] => {
     return [
       {
         rolls: getRolls([valuesLeft[0]], []),
-        pay: 149,
+        pay: 150,
       },
     ]
   }
@@ -275,7 +275,7 @@ export const centerSmallResolveWin = (rollValues: number[]): IBetResolves[] => {
     return [
       {
         rolls: getRolls([valuesLeft[0]], []),
-        pay: 29,
+        pay: 30,
       },
     ]
   }
@@ -287,7 +287,7 @@ export const centerTallResolveWin = (rollValues: number[]): IBetResolves[] => {
     return [
       {
         rolls: getRolls([valuesLeft[0]], []),
-        pay: 29,
+        pay: 30,
       },
     ]
   }

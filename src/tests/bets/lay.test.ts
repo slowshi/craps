@@ -16,10 +16,10 @@ describe('resolveBets: Lay', () => {
       payouts: {
         numbersLay4: {
           ...initialBet,
-          amount: 10,
+          amount: 9,
         },
       },
-      delta: 10,
+      delta: 9,
     })
   })
   test('Loss', () => {

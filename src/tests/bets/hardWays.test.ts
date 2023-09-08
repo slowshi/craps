@@ -26,10 +26,10 @@ describe('resolveBets: Hard Ways', () => {
         payouts: {
           [`centerHard${value}`]: {
             ...initialBet,
-            amount: value === 6 || value === 8 ? 70 : 90,
+            amount: value === 6 || value === 8 ? 90 : 70,
           },
         },
-        delta: value === 6 || value === 8 ? 70 : 90,
+        delta: value === 6 || value === 8 ? 90 : 70,
       })
     })
     test(`Loss Hard ${value}`, () => {

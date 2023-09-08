@@ -24,10 +24,10 @@ describe('resolveBets: ATS Bets', () => {
         centerAll: {
           ...initialBet,
           rollValues: [3, 4, 5, 6, 8, 9, 10, 11, 12, 2],
-          amount: 1490,
+          amount: 1500,
         },
       },
-      delta: 1490,
+      delta: 1500,
     })
   })
   test('Center All - No Win Add Number to bet', () => {
@@ -107,10 +107,10 @@ describe('resolveBets: ATS Bets', () => {
         centerTall: {
           ...initialBet,
           rollValues: [8, 10, 11, 12, 9],
-          amount: 290,
+          amount: 300,
         },
       },
-      delta: 290,
+      delta: 300,
     })
   })
   test('Center Tall - No Win Add Number to bet', () => {
@@ -190,10 +190,10 @@ describe('resolveBets: ATS Bets', () => {
         centerSmall: {
           ...initialBet,
           rollValues: [2, 3, 5, 6, 4],
-          amount: 290,
+          amount: 300,
         },
       },
-      delta: 290,
+      delta: 300,
     })
   })
   test('Center Small - No Win Add Number to bet', () => {
